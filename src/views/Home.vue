@@ -1,11 +1,11 @@
 <template>
   <div class="home_page">
   <div class="jumbotron text-left">
-  <h1>Welcome to Homepage {{ user }} </h1> 
+  <h1>Welcome to Homepage {{ user.displayName }} </h1> 
+ 
   <p>Input your expermntal data</p> 
-</div>
-
-  
+    
+</div>  
   <div class="jumbotron2 text-center">
   <h1>Saerch keywords </h1> 
   <p>Please select one keyword to search</p> 
@@ -25,7 +25,8 @@
 <script>
 // @ is an alias to /src
 import {ref} from "vue";
-import { firebaseFireStore } from "@/firebase/database";
+import { firebaseFireStore, firebaseAuthentication } from "@/firebase/database";
+
 
 
 export default {
@@ -35,15 +36,23 @@ export default {
   },
 
   setup(){
-    const user = ref(null);
+
+    const user = ref(firebaseAuthentication.currentUser);
+   
 
     firebaseFireStore
     .collection("users")
     .doc("jlPv0nW8LxObHkzg7Gug")
     .get()
     .then((snapshot) => {
-      user.value = snapshot.data().name;
+      console.log(snapshot.data().name);
     });
+    
+  
+    firebaseAuthentication.onAuthStateChanged(user => {
+      user.value = user;
+    });
+
 
     return {user};
   }
